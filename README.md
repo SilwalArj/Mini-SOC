@@ -59,7 +59,7 @@ No external Python dependencies are required.
 Getting Started
 1. Clone the repository
 bash
-git clone https://github.com/YOUR-USERNAME/mini-soc.git
+git clone https://github.com/SilwalArj/mini-soc.git
 cd mini-soc
 
 
