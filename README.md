@@ -26,27 +26,6 @@ unittest
 
 The project currently uses only the Python standard library and does not require third-party packages.
 
-Project Structure
-text
-mini-soc/
-├── data/
-│   └── soc.db
-├── logs/
-│   └── sample_auth.log
-├── src/
-│   ├── __init__.py
-│   ├── alerts.py
-│   ├── database.py
-│   ├── detector.py
-│   ├── main.py
-│   ├── models.py
-│   └── parser.py
-├── tests/
-│   └── test_mini_soc.py
-├── .gitignore
-├── README.md
-└── requirements.txt
-
 
 The SQLite database is created locally by the application. The .gitignore configuration excludes local database files and generated Python bytecode.
 
