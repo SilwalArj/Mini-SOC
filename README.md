@@ -1,0 +1,175 @@
+Mini SOC — Security Monitoring and Alerting Platform
+Overview
+
+Mini SOC is a beginner-to-intermediate cybersecurity portfolio project built with Python and SQLite. It demonstrates the fundamentals of security log analysis, rule-based threat detection, event persistence, and alert management.
+
+The application parses authentication logs, identifies potential brute-force activity, stores events and alerts in a SQLite database, and provides a command-line interface for reviewing and updating security alerts.
+
+This project is intended for learning and demonstration purposes. It is not a production-ready Security Operations Center platform.
+
+Features
+Log parsing: Extracts timestamps, event types, usernames, source IP addresses, and severity levels from structured authentication logs.
+Event normalization: Uses Python dataclasses to represent parsed events consistently.
+Brute-force detection: Identifies five or more failed login attempts from the same source IP within a 60-second window.
+SQLite storage: Persists security events and alerts in a local database.
+Duplicate prevention: Skips previously stored identical raw log lines and suppresses matching alerts that are still open.
+Alert management: Lists alerts, filters by severity, and updates investigation status.
+Command-line interface: Supports running log analysis and managing alerts through CLI commands.
+Automated testing: Includes eight unit tests using Python's built-in unittest framework.
+Technology Stack
+Python
+SQLite
+Regular expressions
+argparse
+dataclasses
+unittest
+
+The project currently uses only the Python standard library and does not require third-party packages.
+
+Project Structure
+text
+mini-soc/
+├── data/
+│   └── soc.db
+├── logs/
+│   └── sample_auth.log
+├── src/
+│   ├── __init__.py
+│   ├── alerts.py
+│   ├── database.py
+│   ├── detector.py
+│   ├── main.py
+│   ├── models.py
+│   └── parser.py
+├── tests/
+│   └── test_mini_soc.py
+├── .gitignore
+├── README.md
+└── requirements.txt
+
+
+The SQLite database is created locally by the application. The .gitignore configuration excludes local database files and generated Python bytecode.
+
+Requirements
+Python 3.10 or later
+SQLite support included with Python
+
+No external Python dependencies are required.
+
+Getting Started
+1. Clone the repository
+bash
+git clone https://github.com/YOUR-USERNAME/mini-soc.git
+cd mini-soc
+
+
+Replace YOUR-USERNAME with your GitHub username.
+
+2. Run the monitoring pipeline
+bash
+python3 src/main.py run
+
+
+The application parses the sample authentication log, stores previously unseen events, evaluates stored events for brute-force activity, and attempts to save newly detected alerts.
+
+The database tables are initialized automatically when the CLI starts.
+
+3. List security alerts
+bash
+python3 src/main.py alerts
+
+4. Filter alerts by severity
+bash
+python3 src/main.py alerts --severity HIGH
+
+
+Supported severity levels are LOW, MEDIUM, HIGH, and CRITICAL.
+
+5. Update an alert's status
+bash
+python3 src/main.py status 1 INVESTIGATING
+
+
+Supported statuses are:
+
+NEW
+INVESTIGATING
+RESOLVED
+
+Replace 1 with the ID of the alert you want to update.
+
+Detection Logic
+
+The current brute-force detection rule:
+
+Selects events classified as LOGIN_FAILED.
+Groups relevant failures by source IP address.
+Examines a rolling 60-second time window for each failed login event.
+Generates a BRUTE_FORCE alert with HIGH severity when at least five failures occur within the window.
+Avoids generating repeated alerts for the same source IP during a single detector execution.
+
+The database also checks for an existing alert with the same alert type and source IP in NEW or INVESTIGATING status before inserting another alert.
+
+These controls reduce duplicate alerts, but they do not provide complete incident correlation or distinguish every separate attack episode.
+
+Testing
+
+Run the automated test suite from the project root:
+
+bash
+python3 -m unittest discover -s tests -v
+
+
+The current test suite contains eight tests covering:
+
+Valid log parsing
+Malformed log rejection
+Brute-force detection at the configured threshold
+Behavior below the detection threshold
+Event persistence and duplicate prevention
+Alert persistence and duplicate suppression
+Alert status updates
+Invalid alert status rejection
+
+All eight tests passed in the latest recorded test run.
+
+Database Design
+
+The application uses two SQLite tables.
+
+Events
+
+Stores normalized authentication events, including their timestamps, event types, usernames, source IP addresses, severity levels, and original log lines.
+
+Alerts
+
+Stores generated alerts, including their timestamps, types, severity levels, source IP addresses, descriptions, and investigation statuses.
+
+SQL statements use parameterized values for database operations.
+
+Current Limitations
+The application uses sample authentication logs rather than a live log collection pipeline.
+Detection is rule-based and currently focuses on brute-force login activity.
+The pipeline reprocesses stored events on each run rather than maintaining an ingestion checkpoint.
+Resolved alerts may be recreated when the same historical events are processed again.
+Alert deduplication uses alert type and source IP, which can suppress distinct attack episodes while an earlier matching alert remains open.
+The alert database schema does not persist every field generated by the alert creation function, including username and attempt count.
+The application has a command-line interface rather than a web dashboard.
+The system has not been validated for production deployment or large-scale log processing.
+Future Improvements
+
+Potential next steps include:
+
+Strengthen detection tests for time-window boundaries and out-of-order events.
+Improve tracking of newly ingested events and separate attack episodes.
+Add database transaction and connection error handling.
+Improve alert context and investigation workflows.
+Add structured logging and configuration options.
+Develop a web interface after the core detection and storage behavior is reliable.
+Learning Objectives
+
+This project provides practical experience with Python programming, regular expressions, log normalization, detection rules, SQLite, SQL queries, database persistence, command-line tools, and automated testing.
+
+Disclaimer
+
+This project is intended for educational and defensive cybersecurity purposes. It demonstrates a small subset of security monitoring concepts and should not be considered a replacement for a production SOC or SIEM platform.

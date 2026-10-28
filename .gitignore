@@ -1,0 +1,17 @@
+# Python generated files
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Local database and SQLite files
+data/*.db
+data/*.db-*
+*.sqlite
+*.sqlite3
+
+# Editor and operating system files
+.DS_Store
+Thumbs.db
